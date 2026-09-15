@@ -1,0 +1,248 @@
+{
+  "name": "Assignment_remainder",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "df585e54-67a1-488f-a740-37417dd7ca95",
+              "leftValue": "={{ $json.Student_Email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a8c043bb-3d87-4b2f-8d90-56e50979ea10",
+              "leftValue": "={{ $json.Assignment_Name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5a5f1ce5-f723-4248-ba09-dad09c79770c",
+              "leftValue": "={{ $json.Deadline }}",
+              "rightValue": "",
+              "operator": {
+                "type": "dateTime",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0a3fefa8-71c2-4358-b4aa-262a62428809",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "formTitle": "Student_Assignment_Tracker",
+        "formDescription": "Submit your assignment details to track the deadline and receive reminders.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Student_Name",
+              "placeholder": "Enter your name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Student_Email",
+              "fieldType": "email",
+              "placeholder": "Enter your email address",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Subject",
+              "placeholder": "Enter subject name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Assignment_Name",
+              "placeholder": "Enter assignment name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Assignment_Description",
+              "placeholder": "Describe the assignment",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Deadline",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Priority",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "High"
+                  },
+                  {
+                    "option": "Medium"
+                  },
+                  {
+                    "option": "Low"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "517a1015-e46d-4416-bbca-e83e930ae666",
+      "name": "On form submission"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "d4debcc1-6dd5-4371-82c3-3df71b64ec83",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"student_name\": \"{{$('On form submission').item.json.Student_Name}}\",\n  \"student_email\": \"{{$('On form submission').item.json.Student_Email}}\",\n  \"subject\": \"{{$('On form submission').item.json.Subject}}\",\n  \"assignment_name\": \"{{$('On form submission').item.json.Assignment_Name}}\",\n  \"assignment_description\": \"{{$('On form submission').item.json.Assignment_Description}}\",\n  \"deadline\": \"{{$('On form submission').item.json.Deadline}}\",\n  \"priority\": \"{{$('On form submission').item.json.Priority}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        592,
+        -48
+      ],
+      "id": "4e9c1fe7-85ee-439f-9111-373cd8907d8c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Student_Email }}",
+        "subject": "=Assignment Reminder: {{ $('On form submission').item.json.Assignment_Name }}",
+        "emailType": "text",
+        "message": "=Hello {{ $('On form submission').item.json.Student_Name }},  This is a reminder about your assignment.  Assignment: {{ $('On form submission').item.json.Assignment_Name }}  Description: {{ $('On form submission').item.json.Assignment_Description }}  Deadline: {{ $('On form submission').item.json.Deadline }}  Priority: {{ $('On form submission').item.json.Priority }}  Please make sure you complete and submit the assignment before the deadline.  Regards, Assignment Reminder System  --- This email was sent automatically with n8n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        -48
+      ],
+      "id": "e34b620e-afe8-41f5-b753-e686e6ac748b",
+      "name": "Send a message",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": []
+}
