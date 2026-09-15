@@ -1,5 +1,3 @@
-# Student_Assignment_Tracker
-n8n automation workflow for tracking student assignments and sending deadline reminders.
 # Student Assignment Tracker
 
 An n8n automation workflow that helps students track assignment details and receive email reminders about upcoming deadlines.
