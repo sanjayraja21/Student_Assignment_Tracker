@@ -64,6 +64,12 @@ Do not add the following to GitHub:
 
 Configure your own credentials inside n8n after importing the workflow.
 
+## Author
+
+**Sanjay R.**
+
+B.Tech Artificial Intelligence and Data Science
+
 ## Project Purpose
 
 The project demonstrates how n8n can automate student assignment tracking and email reminder tasks using a simple workflow without manually managing every reminder.
